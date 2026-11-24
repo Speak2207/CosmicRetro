@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>CosmicRetro.Infrastructure</AssemblyName>
+    <RootNamespace>CosmicRetro.Infrastructure</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../CosmicRetro.Core/CosmicRetro.Core.csproj" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+    <PackageReference Include="SharpCompress" Version="0.50.2" />
+  </ItemGroup>
+</Project>

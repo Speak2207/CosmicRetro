@@ -1,0 +1,295 @@
+<Window
+    x:Class="CosmicRetro.App.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:CosmicRetro.App.Views"
+    xmlns:vm="using:CosmicRetro.App.ViewModels"
+    xmlns:models="using:CosmicRetro.Core.Models"
+    x:DataType="vm:MainWindowViewModel"
+    Title="Cosmic Retro"
+    Width="1440"
+    Height="900"
+    MinWidth="1100"
+    MinHeight="700"
+    Background="#0B0B12"
+    Foreground="#F3F3FA"
+    Opened="OnOpened">
+  <Window.Resources>
+    <views:LocalImageConverter x:Key="LocalImageConverter" />
+    <views:PlatformNameConverter x:Key="PlatformNameConverter" />
+    <views:FavoriteLabelConverter x:Key="FavoriteLabelConverter" />
+    <DataTemplate x:Key="GameItemTemplate" x:DataType="models:GameEntry">
+      <Border Classes="game-card" Background="#171722" CornerRadius="10" Padding="12" Margin="4">
+        <Grid ColumnDefinitions="54,*,Auto" ColumnSpacing="14">
+          <Border Width="54" Height="68" CornerRadius="6" Background="#252538" ClipToBounds="True">
+            <Image Source="{Binding CoverPath, Converter={StaticResource LocalImageConverter}}" Stretch="UniformToFill" />
+          </Border>
+          <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="5">
+            <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+            <TextBlock Text="{Binding PlatformId, Converter={StaticResource PlatformNameConverter}}" Foreground="#A5A5BB" FontSize="12" />
+          </StackPanel>
+          <TextBlock Grid.Column="2"
+                     Text="{Binding IsFavorite, Converter={StaticResource FavoriteLabelConverter}}"
+                     VerticalAlignment="Center"
+                     Foreground="#8D78FF"
+                     Margin="8,0" />
+        </Grid>
+      </Border>
+    </DataTemplate>
+  </Window.Resources>
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="Background" Value="#202032" />
+      <Setter Property="Foreground" Value="#F3F3FA" />
+      <Setter Property="BorderBrush" Value="#303047" />
+      <Setter Property="Padding" Value="14,10" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#6555E8" />
+      <Setter Property="BorderBrush" Value="#8D78FF" />
+    </Style>
+    <Style Selector="Button.nav">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Padding" Value="14,12" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="#171722" />
+      <Setter Property="Foreground" Value="#F3F3FA" />
+      <Setter Property="BorderBrush" Value="#303047" />
+      <Setter Property="Padding" Value="12,9" />
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="Background" Value="#171722" />
+      <Setter Property="Foreground" Value="#F3F3FA" />
+      <Setter Property="BorderBrush" Value="#303047" />
+      <Setter Property="Padding" Value="8,6" />
+    </Style>
+    <Style Selector="Border.game-card">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.16" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.game-card:pointerover">
+      <Setter Property="Opacity" Value="0.88" />
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="238,*">
+    <Border Grid.Column="0" Background="#11111B" BorderBrush="#222233" BorderThickness="0,0,1,0">
+      <Grid RowDefinitions="Auto,*,Auto" Margin="18,22">
+        <StackPanel Spacing="3" Margin="8,8,8,28">
+          <TextBlock Text="COSMIC" FontSize="25" FontWeight="Bold" Foreground="#F5F2FF" />
+          <TextBlock Text="RETRO" FontSize="25" FontWeight="Bold" Foreground="#8D78FF" />
+          <TextBlock Text="SUA BIBLIOTECA RETRÔ" FontSize="9" Foreground="#8C8CA3" Margin="0,8,0,0" />
+        </StackPanel>
+        <StackPanel Grid.Row="1" Spacing="5">
+          <Button Classes="nav" Content="Início" Command="{Binding NavigateCommand}" CommandParameter="Home" />
+          <Button Classes="nav" Content="Biblioteca" Command="{Binding NavigateCommand}" CommandParameter="Library" />
+          <Button Classes="nav" Content="Favoritos" Command="{Binding NavigateCommand}" CommandParameter="Favorites" />
+          <Button Classes="nav" Content="Histórico" Command="{Binding NavigateCommand}" CommandParameter="History" />
+        </StackPanel>
+        <Button Grid.Row="2" Classes="nav" Content="Configurações" Command="{Binding NavigateCommand}" CommandParameter="Settings" />
+      </Grid>
+    </Border>
+
+    <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" Margin="30,25,30,18">
+      <Grid ColumnDefinitions="*,360" Margin="0,0,0,24">
+        <StackPanel Spacing="4">
+          <TextBlock Text="{Binding PageTitle}" FontSize="28" FontWeight="Bold" />
+          <TextBlock Text="Uma casa para seus jogos favoritos" Foreground="#9C9CB2" />
+        </StackPanel>
+        <TextBox Grid.Column="1"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 PlaceholderText="Pesquisar na biblioteca"
+                 VerticalAlignment="Center"
+                 KeyUp="OnSearchKeyUp" />
+      </Grid>
+
+      <Grid Grid.Row="1">
+        <ScrollViewer IsVisible="{Binding IsHome}" VerticalScrollBarVisibility="Auto">
+          <StackPanel Spacing="22">
+            <Border Background="#171722" CornerRadius="16" Padding="28">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="10" VerticalAlignment="Center">
+                  <TextBlock Text="Sua próxima aventura começa aqui." FontSize="26" FontWeight="Bold" />
+                  <TextBlock Text="Importe jogos que você já possui e configure seus próprios emuladores."
+                             Foreground="#B0B0C4"
+                             TextWrapping="Wrap" />
+                  <Button Classes="primary" Content="Abrir biblioteca" Command="{Binding NavigateCommand}" CommandParameter="Library" HorizontalAlignment="Left" Margin="0,8,0,0" />
+                </StackPanel>
+                <Border Grid.Column="1" Width="6" Height="110" Background="#29C5FF" CornerRadius="4" Margin="24,0,8,0" />
+              </Grid>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="14">
+              <Border Background="#171722" CornerRadius="12" Padding="18">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="JOGOS NA BIBLIOTECA" FontSize="10" Foreground="#A5A5BB" />
+                  <TextBlock Text="{Binding TotalGames}" FontSize="28" FontWeight="Bold" />
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="1" Background="#171722" CornerRadius="12" Padding="18">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="FAVORITOS" FontSize="10" Foreground="#A5A5BB" />
+                  <TextBlock Text="{Binding FavoriteCount}" FontSize="28" FontWeight="Bold" Foreground="#8D78FF" />
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="2" Background="#171722" CornerRadius="12" Padding="18">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="JÁ EXECUTADOS" FontSize="10" Foreground="#A5A5BB" />
+                  <TextBlock Text="{Binding HistoryCount}" FontSize="28" FontWeight="Bold" Foreground="#29C5FF" />
+                </StackPanel>
+              </Border>
+            </Grid>
+
+            <StackPanel Spacing="10">
+              <TextBlock Text="Jogados recentemente" FontSize="20" FontWeight="SemiBold" />
+              <ListBox ItemsSource="{Binding RecentGames}" ItemTemplate="{StaticResource GameItemTemplate}" SelectedItem="{Binding SelectedGame}" MaxHeight="270" />
+              <TextBlock Text="Nenhum jogo executado ainda." Foreground="#8C8CA3" IsVisible="{Binding HasNoHistory}" />
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel IsVisible="{Binding IsGamePage}" Spacing="14">
+          <Grid ColumnDefinitions="*,Auto">
+            <ComboBox ItemsSource="{Binding PlatformFilters}"
+                      SelectedItem="{Binding SelectedPlatformFilter}"
+                      Width="240"
+                      HorizontalAlignment="Left">
+              <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:PlatformFilter">
+                  <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+              <Button Content="Pesquisar" Command="{Binding RefreshCommand}" />
+              <Button Content="Adicionar pasta" Classes="primary" Click="OnImportFolderClick" />
+              <Button Content="Executar jogo" Command="{Binding LaunchSelectedCommand}" />
+              <Button Content="{Binding FavoriteButtonText}" Command="{Binding ToggleFavoriteCommand}" />
+              <Button Content="Escolher capa" Click="OnChooseCoverClick" />
+              <Button Content="Buscar capa e descrição" Click="OnFindMetadataClick" />
+            </StackPanel>
+          </Grid>
+          <Button Content="Importar biblioteca por pastas de sistema" Classes="primary"
+                  Click="OnImportLibraryRootClick" HorizontalAlignment="Left" />
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+            <TextBlock Text="Sistema dos arquivos importados:" VerticalAlignment="Center" Foreground="#A5A5BB" />
+            <ComboBox Grid.Column="1"
+                      ItemsSource="{Binding Platforms}"
+                      SelectedItem="{Binding SelectedPlatform}"
+                      Width="270"
+                      HorizontalAlignment="Left">
+              <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="models:PlatformDefinition">
+                  <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </Grid>
+          <ListBox ItemsSource="{Binding Games}" ItemTemplate="{StaticResource GameItemTemplate}" SelectedItem="{Binding SelectedGame}" />
+          <Border Background="#171722" CornerRadius="10" Padding="14" IsVisible="{Binding HasSelectedGame}">
+            <StackPanel Spacing="6">
+              <TextBlock Text="{Binding SelectedGame.OriginalName}" Foreground="#A5A5BB" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding SelectedGame.Description}" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding SelectedGame.Region}" Foreground="#A5A5BB" />
+              <TextBlock Text="{Binding SelectedGame.Version}" Foreground="#A5A5BB" />
+              <TextBlock Text="{Binding SelectedGame.CompatibilityWarning}" Foreground="#FFB86B" TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+          <Border Background="#30251C" CornerRadius="8" Padding="10" IsVisible="{Binding HasImportIssues}">
+            <TextBlock Text="{Binding ImportIssuesText}" Foreground="#FFD29A" TextWrapping="Wrap" />
+          </Border>
+        </StackPanel>
+
+        <ScrollViewer IsVisible="{Binding IsSettings}" VerticalScrollBarVisibility="Auto">
+          <StackPanel Spacing="18" MaxWidth="900" HorizontalAlignment="Left">
+            <Border Background="#171722" CornerRadius="14" Padding="22">
+              <StackPanel Spacing="14">
+                <TextBlock Text="RetroArch" FontSize="20" FontWeight="SemiBold" />
+                <TextBlock Text="O Cosmic Retro usa sua instalação existente. Nenhum emulador, core, ROM ou BIOS é distribuído pelo aplicativo."
+                           Foreground="#A5A5BB"
+                           TextWrapping="Wrap" />
+                <Button Classes="primary" Content="Instalar RetroArch e cores oficiais"
+                        Click="OnInstallRetroArchClick" HorizontalAlignment="Left" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                  <TextBox Text="{Binding RetroArchPath}" PlaceholderText="Caminho do retroarch.exe" />
+                  <Button Grid.Column="1" Content="Localizar" Click="OnChooseRetroArchClick" />
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                  <TextBox Text="{Binding RetroArchSystemPath}" PlaceholderText="Pasta de sistema/BIOS do RetroArch" />
+                  <Button Grid.Column="1" Content="Localizar pasta" Click="OnChooseSystemFolderClick" />
+                </Grid>
+                <ComboBox ItemsSource="{Binding Platforms}" SelectedItem="{Binding SelectedProfilePlatform}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:PlatformDefinition">
+                      <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                  <TextBox Text="{Binding CorePath}" PlaceholderText="Caminho do core instalado (arquivo .dll)" />
+                  <Button Grid.Column="1" Content="Localizar" Click="OnChooseCoreClick" />
+                </Grid>
+                <Button Classes="primary" Content="Salvar configuração" Command="{Binding SaveProfileCommand}" HorizontalAlignment="Left" />
+              </StackPanel>
+            </Border>
+            <Border Background="#171722" CornerRadius="14" Padding="22">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Capas e descrições" FontSize="18" FontWeight="SemiBold" />
+                <TextBlock Text="Busca opcional no TheGamesDB. O Cosmic Retro envia somente o título e o sistema, nunca a ROM. A chave fica apenas nesta sessão."
+                           Foreground="#A5A5BB" TextWrapping="Wrap" />
+                <TextBox Text="{Binding MetadataApiKey}" PlaceholderText="Chave de API do TheGamesDB (não armazenada)" />
+              </StackPanel>
+            </Border>
+            <Border Background="#171722" CornerRadius="14" Padding="22">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Importação e privacidade" FontSize="18" FontWeight="SemiBold" />
+                <TextBlock Text="A biblioteca indexa arquivos locais escolhidos por você. Ela não baixa jogos nem firmware."
+                           Foreground="#A5A5BB"
+                           TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+            <Border Background="#171722" CornerRadius="14" Padding="22">
+              <StackPanel Spacing="12">
+                <TextBlock Text="Pastas reindexadas automaticamente" FontSize="18" FontWeight="SemiBold" />
+                <TextBlock Text="As pastas adicionadas pela biblioteca são verificadas ao iniciar. Remover uma fonte não apaga os jogos já catalogados."
+                           Foreground="#A5A5BB"
+                           TextWrapping="Wrap" />
+                <ItemsControl ItemsSource="{Binding RomSources}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:RomSource">
+                      <Border Background="#202032" CornerRadius="8" Padding="10" Margin="0,3">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                          <StackPanel Spacing="3">
+                            <TextBlock Text="{Binding FolderPath}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding PlatformId, Converter={StaticResource PlatformNameConverter}}"
+                                       FontSize="11"
+                                       Foreground="#A5A5BB" />
+                          </StackPanel>
+                          <Button Grid.Column="1" Content="Remover fonte" Tag="{Binding}" Click="OnRemoveRomSourceClick" />
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+
+      <Border Grid.Row="2" Background="#11111B" CornerRadius="8" Padding="12,8" Margin="0,16,0,0">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="{Binding StatusMessage}" Foreground="#B6B6C8" TextTrimming="CharacterEllipsis" />
+          <TextBlock Grid.Column="1" Text="COSMIC RETRO V0.1" FontSize="10" Foreground="#77778E" />
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>

@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/CosmicRetro.Core/CosmicRetro.Core.csproj" />
+  <Project Path="src/CosmicRetro.Infrastructure/CosmicRetro.Infrastructure.csproj" />
+  <Project Path="src/CosmicRetro.App/CosmicRetro.App.csproj" />
+  <Project Path="tests/CosmicRetro.Tests/CosmicRetro.Tests.csproj" />
+</Solution>
